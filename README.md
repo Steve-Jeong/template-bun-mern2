@@ -128,3 +128,38 @@
    It should show `json message` on the cli.
 
 
+
+
+### Add mongo to the api
+1) Add mongo to docker-compose.yml
+   ```diff
+      version: '3.9'
+      services:
+         api:
+            build: 
+               context: ./api
+            ports:
+               - 3000:3000
+            volumes:
+               - ./api:/app
+               - /app/node_modules
+         
+   +     mongodb:
+   +        image: mongo:6
+   +        environment:
+   +           - MONGO_INITDB_ROOT_USERNAME=sanjeev
+   +           - MONGO_INITDB_ROOT_PASSWORD=mypassword
+   +        volumes:
+   +           - mongo-db:/data/db
+   +
+   +  volumes:
+   +     mongo-db:
+   ```
+
+2) Run the container, and test if the mongo is working
+   ```bash
+      docker compose up -d --build
+      docker exec -it mern-mongodb-1 mongosh -u sanjeev -p mypassword
+   ```
+
+   It should enter into the mongodb without any error message.

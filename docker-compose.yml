@@ -8,3 +8,14 @@ services:
     volumes:
       - ./api:/app
       - /app/node_modules
+
+  mongodb:
+    image: mongo:6
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=sanjeev
+      - MONGO_INITDB_ROOT_PASSWORD=mypassword
+    volumes:
+      - mongo-db:/data/db
+
+volumes:
+   mongo-db:
