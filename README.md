@@ -222,3 +222,74 @@
 
    DELETE delete a post
       localhost:3000/api/v1/post/64b1e2cf7f9c48205992d2f7
+
+
+### Front-1. Create front directory and make initial Dockerfile in the front directory
+1) Dockerfile
+   ```Dockerfile
+      FROM oven/bun
+      USER bun
+      WORKDIR /app
+   ```
+
+2) Then, in the front directory terminal run
+   ```bash
+      docker build -t front .
+   ```
+
+3) Enter into the docker container
+   ```bash
+      docker run -it -v $(pwd):/app --name front-1 front sh   
+   ```
+
+   In the container, initialize the react vite. But if there is any file in the directory where the react vite is installed, it emits error. So, tentantively move the Dockerfile fromt the front directory to the MERN home directory in the separate host terminal.
+
+   ```bash
+      # in the host directory
+      ~/bun-mern $ cd front
+      ~/bun-mern/front $ mv Dockerfile ..
+
+      # in the container
+      $ bun create vite@latest
+      # in the project name question, type "." so that the react vite is installed in the front directory. And then, choose appropriate framework and its variant
+      $ bun install
+
+      # in the host directory
+      ~/bun-mern $ mv Dockerfile front/
+
+      # move the content of .gitignore file in the front directory to .gitignore file in the home directory, and delete .gitignore.
+   ```
+
+4) In the vscode front directory, change vite.config.js as follows
+   ```javascript
+      import { defineConfig } from 'vite'
+      import react from '@vitejs/plugin-react'
+
+      // https://vitejs.dev/config/
+      export default defineConfig({
+         plugins: [react()],
+         server: {
+            watch: {
+               usePolling: true
+            },
+            host: true,
+            strictPort: true,
+            port: 5173
+         }
+      })
+   ```
+
+   In the front-1 container, run the following.
+   ```bash
+      $ bun run dev      
+   ```
+
+   If you followed correctly up to this point, if you run `bun run dev`, it should show running message of react vite. Press Ctrl+C to stop react vite.
+
+5) In the host terminal, move back the Dockerfile to the front directory
+   ```bash
+      # in the host directory
+      ~/MERN $ cd Dockerfile ./front
+   ```
+
+6) Exit from the front container
