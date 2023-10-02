@@ -103,3 +103,28 @@
    It should show `json message` on the cli.
    
 
+
+### Docker Compose 
+1) Make docker-compose.yml in the project home directory. Set api into docker-compose.yml
+   ```docker-compose.yml
+      version: '3.9'
+      services:
+         api:
+            build: 
+               context: ./api
+            ports:
+               - 3000:3000
+            volumes:
+               - ./api:/app
+               - /app/node_modules
+   ```
+
+2) Run the container, and test if it is working
+   ```bash
+      docker compose up -d --build
+      curl localhost:3000
+   ```
+
+   It should show `json message` on the cli.
+
+
