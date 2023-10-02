@@ -163,3 +163,62 @@
    ```
 
    It should enter into the mongodb without any error message.
+
+
+
+   ### MongoDB API - POST & AUTH API
+1) Run docker compose and enter into api container shell, and install mongoose.
+   ```bash
+      docker compose up -d --build
+      docker exec -it bun-mern-api-1 sh
+      bun add mongoose
+   ```
+
+2) Close docker compose with 'docker compose down', and run again with 'docker compose up -d --build'
+
+3) Add connection string to index.js in the api directory.
+   ```javascript
+      const mongoose = require('mongoose')
+      mongoose.connect('mongodb://sanjeev:mypassword@mongodb:27017/mydb?authSource=admin')
+         .then(()=>console.log('connected to mongodb'))
+         .catch((err)=>console.log('error connecting to mongodb : ', err))
+   ```
+
+4) Check if the mongo connection is displayed.
+   ```bash
+      docker logs bun-mern-api-1 -f
+   ```
+
+5) Add models, controllers, routes directory and setup the necessary code.
+
+6) Test Post API using POSTMAN as follows
+   POST create a post
+      localhost:3000/api/v1/post
+
+      Body
+      raw (json)
+      json
+      {
+         "title": "The Lord of the Ring",
+         "body": "body of The Lord of the Ring"
+      }
+
+   GET get a request
+      localhost:3000/api/v1/post/64b1e2cf7f9c48205992d2f7
+
+   GET get all posts
+      localhost:3000/api/v1/post
+
+   PATCH update a post
+      localhost:3000/api/v1/post/64b1e2cf7f9c48205992d2f7
+
+      Body
+      raw (json)
+      json
+      {
+         "title": "Harry Potter 2",
+         "body": "body of Harry Potter 2"
+      }
+
+   DELETE delete a post
+      localhost:3000/api/v1/post/64b1e2cf7f9c48205992d2f7
