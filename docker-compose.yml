@@ -17,5 +17,14 @@ services:
     volumes:
       - mongo-db:/data/db
 
+  front:
+    build: 
+      context: ./front
+    ports:
+      - 5173:5173
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+
 volumes:
    mongo-db:

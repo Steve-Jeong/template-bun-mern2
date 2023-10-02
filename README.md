@@ -293,3 +293,89 @@
    ```
 
 6) Exit from the front container
+
+
+
+
+
+### FRONT-2. Update the Dockerfile in the front directory to the final version
+1) Dockerfile
+   ```diff
+      FROM oven/bun
+      USER bun
+      WORKDIR /app
+   +  COPY --chown=node:node package*.json ./
+   +  RUN npm ci
+   +  COPY --chown=node:node ./ ./
+   +  CMD [ "bun", "run", "dev" ]
+   ```
+
+   From above `--chown=node:node` changes the permission of the files from the root user to node user.
+
+2) Add .dockerignore file.
+   ```.dockerignore
+      node_modules
+   ```
+
+3) Build the front docker image again. 
+   ```bash
+      docker build -t front .
+   ```
+
+4) Run the container, and test if it is working
+   ```bash
+      docker run -d -p 5173:5173 -v $(pwd):/app -v /app/node_modules --name front-1 front
+      curl localhost:5173
+   ```
+
+   It should show `Vite + React html script` on the cli.
+
+5) Stop the container
+   ```
+      docker rm front-1 -f
+   ```
+
+6) Add front stack to the docker-compose.yml in the home directory.
+   ```diff
+      version: '3.9'
+      services:
+         api:
+            build: 
+               context: ./api
+            ports:
+               - 3000:3000
+            volumes:
+               - ./api:/app
+               - /app/node_modules
+
+   +     front:
+   +        build: 
+   +           context: ./front
+   +        ports:
+   +           - 5173:5173
+   +        volumes:
+   +           - ./front:/app
+   +           - /app/node_modules
+         
+         mongodb:
+            image: mongo:6
+            environment:
+               - MONGO_INITDB_ROOT_USERNAME=sanjeev
+               - MONGO_INITDB_ROOT_PASSWORD=mypassword
+            volumes:
+               - mongo-db:/data/db
+    
+      volumes:
+         mongo-db:
+   ```
+
+7) In the home directory run the followings, and check if it is working as the same as before.
+   ```bash
+      docker compose up -d --build
+      curl localhost:3000
+      curl localhost:5173
+      docker exec -it mern-mongodb-1 mongosh -u sanjeev -p mypassword
+   ```
+
+8) If all are working well, run 'docker compose down' for the next step.
+
