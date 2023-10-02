@@ -68,3 +68,38 @@
 9) Exit from the container
 
 
+
+
+### API-2. Update the Dockerfile in the api directory to the final version
+1) Dockerfile
+   ```diff
+      FROM oven/bun
+      USER bun
+      WORKDIR /app
+   +  COPY --chown=bun:bun package*.json ./
+   +  RUN bun install
+   +  COPY --chown=node:node ./ ./
+   +  CMD [ "bun", "run", "dev" ]
+   ```
+
+   From above `--chown=bun:bun` changes the permission of the files from the root user to `bun` user.
+
+2) Add .dockerignore file.
+   ```.dockerignore
+      node_modules
+   ```
+
+3) Build the api docker image again. 
+   ```bash
+      docker build -t api .
+   ```
+
+4) Run the container, and test if it is working
+   ```bash
+      docker run -d -p 3000:3000 -v $(pwd):/app -v /app/node_modules --name api-1 api
+      curl localhost:3000
+   ```
+
+   It should show `json message` on the cli.
+   
+
